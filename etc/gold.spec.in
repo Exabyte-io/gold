@@ -2,7 +2,7 @@
 
 %define  name     @PACKAGE_TARNAME@
 %define  ver      @PACKAGE_VERSION@
-%define  rel      23
+%define  rel      24
 %define  basedir   %{name}-%{ver}
 %define  prefix    @prefix@
 %define  profiled  /etc/profile.d
@@ -17,8 +17,8 @@ Group: Applications
 Source0: %{name}-%{ver}.tar.gz
 URL: https://github.com/UCL-RITS/Gold/
 Distribution: SSS
-Vendor: UCL-RITS
-Packager: UCL-RITS
+Vendor: UCL-ARC
+Packager: UCL-ARC
 BuildRoot: %{_tmppath}/%{name}-%{ver}-root
 Prefix: %{prefix}
 
@@ -112,14 +112,13 @@ make build_root=$RPM_BUILD_ROOT install-gui
 cp bank.gold base.sql bank.sql sssrmap3.xsd ${RPM_BUILD_ROOT}%{prefix}
 cp src/gold_init.pl ${RPM_BUILD_ROOT}%{prefix}/sbin/gold_init
 chmod +x ${RPM_BUILD_ROOT}%{prefix}/sbin/gold_init
-mkdir -p $RPM_BUILD_ROOT/etc/init.d
-cp etc/gold.d ${RPM_BUILD_ROOT}/etc/init.d/gold
+mkdir -p $RPM_BUILD_ROOT/usr/lib/systemd/system/
+cp etc/goldd.service ${RPM_BUILD_ROOT}/usr/lib/systemd/system/goldd@.service
 mkdir -p ${RPM_BUILD_ROOT}/etc/sudoers.d/
 cp etc/sudoers.d/gold ${RPM_BUILD_ROOT}/etc/sudoers.d/
-mkdir -p ${RPM_BUILD_ROOT}/usr/local/bin
-cp src/wrapper.sh ${RPM_BUILD_ROOT}/usr/local/bin
-chmod 0755 ${RPM_BUILD_ROOT}/usr/local/bin/wrapper.sh
-echo ${RPM_BUILD_ROOT}/%{prefix}/bin/*|xargs basename -a |sed -e "s:^:${RPM_BUILD_ROOT}/usr/local/bin/:"| xargs -n 1 ln ${RPM_BUILD_ROOT}/usr/local/bin/wrapper.sh 
+mkdir -p ${RPM_BUILD_ROOT}/usr/bin/
+chmod 0755 src/wrapper.sh
+echo ${RPM_BUILD_ROOT}/%{prefix}/bin/*|xargs basename -a |sed -e "s:^:${RPM_BUILD_ROOT}/usr/bin/:"| xargs -n 1 ln src/wrapper.sh 
 touch ${RPM_BUILD_ROOT}%{prefix}/etc/auth_key
 # Remove the docs so they can be installed in the defaultdocdir
 rm -rf ${RPM_BUILD_ROOT}%{prefix}/doc
@@ -168,11 +167,11 @@ mkdir -p $RPM_BUILD_ROOT/%{profiled}
 %{prefix}/bank.sql
 %{prefix}/sssrmap3.xsd
 %{cgi_bin}
-/usr/local/bin/*
+/usr/bin/
+/usr/lib/systemd/system
 %config(noreplace) %{prefix}/etc/gold.conf
 %config(noreplace) %{prefix}/etc/goldg.conf
 %config(noreplace) %{prefix}/etc/goldd.conf
-%attr(0755,root,root) /etc/init.d/gold
 %attr(0600,root,root) /etc/sudoers.d/gold
 %doc doc/userguide.pdf README INSTALL LICENSE CHANGES
 %doc doc/userguide
@@ -187,6 +186,8 @@ mkdir -p $RPM_BUILD_ROOT/%{profiled}
 # ChangeLog section
 #---------------------------------------------------------------------
 %changelog
+* Tue May 07 2024  03:33:35PM    William Hay <w.hay@ucl.ac.uk>
+- Use Systemd unit file rather than SysV script, Move things to /usr/bin from /usr/local/bin
 * Tue Jan 24 2017  02:19:00PM    William Hay <w.hay@ucl.ac.uk>
 - Updated RPM for Use on RHEL7
 * Thu Feb 17 2005  12:11:55AM    Scott Jackson <Scott.Jackson@pnl.gov>

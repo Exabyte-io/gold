@@ -1,0 +1,6 @@
+[Unit]
+Description=Gold Deamon for %I
+[Service]
+EnvironmentFile=/etc/sysconfig/gold%i
+EnvironmentFile=/etc/defaults/gold%i
+ExecStart=@prefix@/sbin/goldd --user ${GOLD_USER:-ccspapp} --start

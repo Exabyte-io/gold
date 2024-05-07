@@ -186,9 +186,9 @@ AC_CONFIG_FILES([
   etc/goldd.conf.dist
   etc/goldg.conf.dist
   etc/gold.spec
-  etc/gold.d
   etc/gold.sh
   etc/gold.csh
+  etc/goldd.service
   etc/sudoers.d/gold
   INSTALL
   lib/Gold.pm
